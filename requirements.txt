@@ -1,0 +1,10 @@
+langchain-huggingface
+huggingface_hub
+transformers
+langchain
+diffusers
+langchain-community
+accelerate
+imageio-ffmpeg
+moviepy
+gtts
