@@ -1,8 +1,3 @@
-import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler
-from diffusers.utils import export_to_gif
-from huggingface_hub import hf_hub_download
-from safetensors.torch import load_file
 from gtts import gTTS
 from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips, TextClip
 import os
@@ -14,29 +9,6 @@ def text_to_speech(text, filename):
     tts = gTTS(text, lang='en')
     tts.save(filename)
 
-def runModel():
-    if os.path.isdir(model_directory):
-        dtype = torch.float16
-        adapter = MotionAdapter().to(device, dtype)
-        pipe = AnimateDiffPipeline.from_pretrained(model_directory, motion_adapter=adapter, torch_dtype=dtype).to(device)
-        pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing", beta_schedule="linear")
-        return pipe
-    else:
-        device = "cuda"
-        dtype = torch.float16
-
-        step = 4  # Options: [1,2,4,8]
-        repo = "ByteDance/AnimateDiff-Lightning"
-        ckpt = f"animatediff_lightning_{step}step_diffusers.safetensors"
-        base = "emilianJR/epiCRealism"  # Choose to your favorite base model.
-
-        adapter = MotionAdapter().to(device, dtype)
-        adapter.load_state_dict(load_file(hf_hub_download(repo ,ckpt), device=device))
-        pipe = AnimateDiffPipeline.from_pretrained(base, motion_adapter=adapter, torch_dtype=dtype).to(device)
-        pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing", beta_schedule="linear")
-        pipe.save_pretrained(local_directory)
-        adapter.save_pretrained(local_directory)
-        return pipe
 
 def read_text_file(file_path):
     try:
@@ -55,16 +27,11 @@ def read_text_file(file_path):
 # Example usage
 if __name__ == "__main__":
     # Replace 'your_file.txt' with the path to your text file
-    pipe = runModel()
+    #pipe = runModel()
     file_path = './data.txt'
     paragraphs = read_text_file(file_path)
     rdmnum = random.randint(1, 2500)
-    output = pipe(prompt=paragraphs[rdmnum], guidance_scale=1.0, num_inference_steps=step)
-    export_to_gif(output.frames[0], "animation.gif")
-    output = pipe(prompt="modern"+paragraphs[rdmnum], guidance_scale=1.0, num_inference_steps=step)
-    export_to_gif(output.frames[0], "animation1.gif")
-
-    gif_paths = ['animation.gif','animation1.gif']
+    gif_paths = ['animation.gif','animation1.gif','animation3.gif','animation4.gif']
 
     # Text to be displayed and converted to speech
     text = paragraphs[rdmnum]  # Replace with your desired text
