@@ -37,7 +37,8 @@ def create_text_image(text, size):
 
 # Example usage
 if __name__ == "__main__":
-    os.remove("output_video.mp4")
+    if os.path.isfile(file_path):
+        os.remove("output_video.mp4")
     file_path = './data.txt'  # Replace with your text file path
     paragraphs = read_text_file(file_path)
     
